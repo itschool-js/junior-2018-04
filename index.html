@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Битва магов</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <style>
+        #plan {
+            background-color: green;
+            position: relative;
+            margin-bottom: 20px;
+            width: 800px;
+            height: 400px;
+        }
+
+        #mage {
+            background-color: orange;
+            width: 10px;
+            height: 10px;
+            position: absolute;
+            top: 60px;
+            left: 100px;
+        }
+
+        td {
+            font-weight: bold;
+        }
+
+        .teamBlue {
+            color: dodgerblue;
+        }
+        .teamOrange {
+            color: orange;
+        }
+        .teamRed {
+            color: red;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>Битва магов</h1>
+
+    <div id="plan">
+        <div id="mage"></div>
+    </div>
+
+    <table id="teams" class="table table-dark">
+        <thead>
+            <tr>
+                <th>Название команды</th>
+                <th>Счет</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="teamBlue">
+                <td>Зловещие некроманты</td>
+                <td>1400</td>
+            </tr>
+            <tr class="teamOrange">
+                <td>Грациозные эльфы</td>
+                <td>1270</td>
+            </tr>
+            <tr class="teamRed">
+                <td>Коварные чернокнижники</td>
+                <td>980</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
