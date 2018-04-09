@@ -1,0 +1,72 @@
+.con {
+    display: block;
+    width: 960px;
+    height: 480px;
+    background-image: url(12%5E12.png);
+    background-size: contain;
+    background-color: #bc0404;
+    margin: auto;
+}
+
+.mage_w {
+    display: block;
+    position: relative;
+    left: 3;
+    top: 3;
+    background-image: url(mf33.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width:42px;
+    height:42px;
+    z-index: 2;
+}
+
+.btnRight{
+      padding:0;
+    margin:0;
+    text-align: center;
+    width: 30%;
+    height: 30px;
+    background-color: #f48d8d;
+    display:inline-block;
+}
+
+.btnLeft{
+    padding:0;
+    margin:0;
+    text-align: center;
+    width: 30%;
+    height: 30px;
+    background-color: #af7fd3;
+    display:inline-block;
+}
+
+.btnTop{
+      padding:0;
+    margin:0;
+    text-align: center;
+    width: 30%;
+    height: 30px;
+    background-color: #76c9d8;
+    display:inline-block;
+}
+
+.btnBottom{
+    width: 30%;
+    height: 30px;
+    background-color: #d1d172;
+    display:inline-block;
+    padding:0;
+    margin:0;
+    text-align: center;
+}
+
+.pust{
+      padding:0;
+    margin:0;
+    text-align: center;
+    width: 30%;
+    height: 30px;
+    background-color: #000000;
+    display:inline-block;
+}
