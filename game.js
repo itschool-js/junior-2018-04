@@ -1,13 +1,26 @@
 'use strict';
 
 let plan = `
-###############
-#             #
-#       #     #
-#             #
-#             #
-#             #
-###############`;
+########################################
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+#                                      #
+########################################`;
 
 plan = plan.trim().split('\n');
 
@@ -48,6 +61,12 @@ function moveRight() {
     printPlan();
 }
 
-while (plan[mageY][mageX + 1] == ' ') {
-    moveRight();
+function move(dir) {
+    if (Math.abs(dir.x) <= 1 && Math.abs(dir.y) <= 1) {        
+        if (plan[mageY + dir.y][mageX + dir.x] == ' ') {
+            mageX += dir.x;
+            mageY += dir.y;
+        }
+    }
+    printPlan();    
 }
