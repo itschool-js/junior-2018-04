@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <!--Можно вызвать функцию в консоли,или же по нажатию кнопок-->
+    <button class="left" onclick="move({x:-1, y:0})">left</button>
+    <button class="right" onclick="move({x:1, y:0})">right</button>
+    <button class="up" onclick="move({x:0, y:-1})">up</button>
+    <button class="down" onclick="move({x:0, y:1})">down</button>
+
+
+
+    <button class="diag1" onclick="move({x:-1, y:-1})">leftUp</button>
+    <button class="diag2" onclick="move({x:-1, y:1})">leftDown</button>
+
+    <button class="diag3" onclick="move({x:1, y:-1})">rightUp</button>
+    <button class="diag4" onclick="move({x:1, y:1})">rightDown</button>
+
+
+
+
+
+
+    <script>
+
+        let plan = `
+###############
+#             #
+#             #
+#             #
+#             #
+#             #
+#             #
+###############
+`
+
+        plan = plan.trim().split('\n');
+
+        let planW = plan[0].length;
+        let planH = plan.length;
+        console.log(planW);
+
+        let mageX = 3;
+        let mageY = 2;
+
+        function printPlan() {
+            let s = '';
+            for (let y = 0; y < planH; y++) {
+                for (let x = 0; x < planW; x++) {
+                    if (x == mageX && y == mageY) {
+                        s += 'M';
+                    } else {
+                        s += plan[y][x];
+                    }
+                }
+                s += '\n';
+            }
+            console.clear();
+            console.log(s);
+
+        }
+
+
+        printPlan();
+
+
+        function move(dir) {
+            if (dir.x > 1) {
+                dir.x = 0 + console.log('Маг может передвигаться только на одну клетку!');
+            }
+            else if (dir.x < -1) {
+                dir.x = 0 + console.log('Маг может передвигаться только на одну клетку!')
+
+            }
+            else if (dir.y > 1) {
+                dir.y = 0 + console.log('Маг может передвигаться только на одну клетку!')
+
+            }
+            else if (dir.y < -1) {
+                dir.y = 0 + console.log('Маг может передвигаться только на одну клетку!')
+
+            };
+
+
+
+            var nextX = mageX + dir.x;
+            var nextY = mageY + dir.y;
+
+
+            if (plan.length > nextY && nextY >= 0 && plan[nextY][nextX] == ' ') {
+                mageY = nextY;
+                mageX = nextX;
+
+                printPlan();
+            }
+        }
+
+
+
+    </script>
+
+
+</body>
+</html>

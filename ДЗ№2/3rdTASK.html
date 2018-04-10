@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+ 
+   <script>
+
+
+        function printPlan() {
+            let s = '';
+            for (let y = 0; y < planH; y++) {
+                for (let x = 0; x < planW; x++) {
+                    if (x == mageX && y == mageY) {
+                        s += 'M';
+                    } else {
+                        s += plan[y][x];
+                    }
+                }
+                s += '\n';
+            }
+            console.log(s);
+
+        }
+
+
+
+
+        function move(dir) {
+            if (dir.x > 1) {
+                dir.x = 0;
+                console.log('Маг может передвигаться только на одну клетку!');
+            }
+            else if (dir.x < -1) {
+                dir.x = 0;
+                console.log('Маг может передвигаться только на одну клетку!')
+
+            };
+             if (dir.y > 1) {
+                dir.y = 0;
+                console.log('Маг может передвигаться только на одну клетку!')
+
+            }
+            else if (dir.y < -1) {
+                dir.y = 0;
+                console.log('Маг может передвигаться только на одну клетку!')
+
+            };
+
+
+
+            var nextX = mageX + dir.x;
+            var nextY = mageY + dir.y;
+
+
+            if (plan.length > nextY && nextY >= 0 && plan[nextY][nextX] == ' ') {
+                mageY = nextY;
+                mageX = nextX;
+
+                printPlan();
+            }
+        }
+
+        /*
+         * Создание игрового поля 
+         * n:Размер поля NxN
+         * borderChar:Символ границы
+        */
+        function createGameField(n, borderChar) {
+            plan = '';
+
+            for (var i = 0; i < n + 2; i++) {
+                plan += borderChar;
+            }
+            plan += '\n';
+
+            for (var i = 0; i < n; i++) {
+                plan += borderChar;
+                for (var i2 = 0; i2 < n; i2++) {
+                    plan += ' ';
+                }
+                plan += borderChar + '\n';
+            }
+
+            for (var i = 0; i < n + 2; i++) {
+                plan += borderChar;
+            }
+
+            plan = plan.split('\n');
+            planW = plan[0].length;
+            planH = plan.length;
+           
+        }
+
+
+        /*
+         * Начало игры
+         * n:Размер поля NxN
+         * borderChar:Символ границы
+        */
+        function startGame(n, borderChar) {
+            createGameField(n, borderChar);
+            doSpiral(n);
+        }
+
+        function doSpiral(n) {
+            //Определяем начальное положение мага
+            mageX = 1;
+            mageY = n;
+
+            //Определяем направления в которых может двигаться маг
+            var directions = [
+                { x: 1, y: 0 },
+                { x: 0, y: -1 },
+                { x: -1, y: 0 },
+                { x: 0, y: 1 }
+            ];
+            //Определяем индекс направления для массива aiDirections
+            var directionIndex = 0;
+
+            //Определяем количество линий, которые нам нужно нарисовать до очередного отступа
+            var linesForOffset = 3;
+
+            //Печатаем план в консоль
+            printPlan();
+
+            //Определяем текущее смещение и запускаем цикл
+            for (var offset = 0; n > offset; offset++) {
+                for (; linesForOffset > 0; linesForOffset--) {
+                    //Делаем шаги, количеством размера поля минус смещение
+                    for (var stepsLost = n - offset; stepsLost > 1; stepsLost--) {
+                        move(directions[directionIndex]);
+                    }
+                    //Поворачиваемся, увеличивая индекс направления
+                    directionIndex++;
+                    //Если такого индекса направления не существует, ставим индекс 0
+                    if (directionIndex > directions.length - 1) {
+                        directionIndex = 0;
+                    }
+                }
+
+                linesForOffset = 2;
+            }
+        }
+        startGame(5,'#')
+    </script>
+
+
+</body>
+</html>
