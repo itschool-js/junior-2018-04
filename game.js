@@ -160,11 +160,16 @@ drawMage(mage1);
 
 const MAX_TURN = 100;
 let turn = 0;
+
 function makeTurn() {
-    keyMove(mage1);
-    turn++;
-    if (turn <= MAX_TURN) {
-        setTimeout(makeTurn, 200);
+    try {
+        keyMove(mage1);
+        turn++;
+        if (turn <= MAX_TURN) {
+            setTimeout(makeTurn, 200);
+        }
+    } catch (e) {
+        console.log(e);
     }
 }
 
