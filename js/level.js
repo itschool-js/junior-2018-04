@@ -7,6 +7,11 @@ class Level {
         this.width = this.plan[0].length;
     }
 
+    /**
+     * 
+     * @param {*} state 
+     * @param {*} xy 
+     */
     getCell(state, xy) {
         // check static content
         if (this.plan[xy.y][xy.x] != Cell.EMPTY) {
@@ -14,7 +19,11 @@ class Level {
         }
 
         // check dynamic content    
-        // TODO: implement check for a mage
+        for (let mage of state.mages) {
+            if (mage.xy.equals(xy)) {
+                return mage;
+            }
+        }        
 
         return Cell.EMPTY;
     }
@@ -29,16 +38,25 @@ class HtmlLevel extends Level {
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 if (this.plan[y][x] == '#') {
-                    let wall = this.createDiv(new XY(x, y), 'grey');
+                    let wall = HtmlLevel.createDiv(new XY(x, y), 'grey');
                     planDiv.appendChild(wall);
                 }
             }
         }
 
         for (let mage of initState.mages) {
-            let mageDiv = this.createDiv(mage.xy, mage.color);
+            let mageDiv = HtmlLevel.createDiv(mage.xy, mage.color);
             mageDiv.id = 'mage' + mage.id;            
             planDiv.appendChild(mageDiv);
+        }
+
+        // level spells
+        for (let spell of state.spells) {            
+            // TODO: implement creation and moving the spells
+            if (spell.action.type == ActionType.GONE || spell.action.type == ActionType.APPLY) {
+                let spellDiv = document.getElementById('spell' + spell.id);
+                planDiv.removeChild(spellDiv);
+            }
         }
     }
 
@@ -52,7 +70,7 @@ class HtmlLevel extends Level {
         }        
     }
 
-    createDiv(xy, color) {
+    static createDiv(xy, color) {
         let div = document.createElement('div');
         div.style.width = GRID_SIZE + 'px';
         div.style.height = GRID_SIZE + 'px';

@@ -20,63 +20,57 @@ class Mage {
         this.action = { type: ActionType.MOVE, dir: dir };
     }
 
-    // cast(spell) {
-    //     this.mana -= spell.cost;
-    //     this.action = { type: ActionType.CAST, spell: spell };
-    // }
+    cast(spell) {
+        this.mana -= spell.cost;
+        this.action = { type: ActionType.CAST, spell: spell };
+    }
 }
 
 class FireballSpell {
     constructor(mageId, xy, dir, id) {
-        // TODO: implement constructor
+        let idCounter = 0;
+
+        // constructor
+        this.mageId = mageId;
+        this.xy = xy;
+        this.dir = dir;
+        if (id) {
+            this.id = id;
+        } else {
+            this.id = ++idCounter;
+            this.action = { type: ActionType.NEW };
+        }
+        this.color = 'yellow';
     }
 
     clone() {
-        // TODO: implement clone method
+        var spell = new FireballSpell(this.mageId, this.xy, this.dir, this.id);
+        spell.action = this.action;
+        return spell;
     }
 
-    // get cost() { return FIREBALL_COST; }
+    get cost() { return FIREBALL_COST; }
 
-    // get power() { return FIREBALL_POWER; } 
+    get power() { return FIREBALL_POWER; }
 
-    // move() {
-    //     this.xy = this.xy.add(this.dir);
-    //     this.action = { type: ActionType.MOVE };
-    // }
+    move() {
+        // TODO: implement
+    }
 
-    // interact(cell) {
-    //     if (cell === Cell.WALL) {
-    //         this.action = { type: ActionType.GONE };
-    //     }
-    //     // } else if (cell instanceof Mage) {
-    //     //     this.apply(cell);
-    //     // } 
-    // }
+    interact(cell) {
+        if (cell === Cell.WALL) {
+            this.action = { type: ActionType.GONE };
+        } else if (cell instanceof Mage) {
+            this.apply(cell);
+        }
+    }
 
-    // apply(mage) {
-    //     this.action = { type: ActionType.APPLY, targetId: mage.id };
-    //     mage.health -= this.power;        
-    // }
-
-    // validate(mage, level, state) {
-    //     if (!this.dir || !this.dir.validate()) {
-    //         return null;
-    //     }
-    //     let spell = new FireballSpell();
-    //     spell.dir = this.dir;
-
-    //     if (mage.mana < spell.cost) {
-    //         return null;
-    //     }
-
-    //     let xy = mage.xy.add(spell.dir);
-    //     let cell = level.getCell(state, xy);
-    //     if (cell === Cell.WALL || cell instanceof Mage) {
-    //         return null;
-    //     }
-
-    //     spell.mageId = mage.id;
-    //     spell.xy = xy;        
-    //     return spell;
-    // }
+    apply(mage) {
+        this.action = { type: ActionType.APPLY, targetId: mage.id };
+        mage.health -= this.power;        
+    }
 }
+
+// TODO: implement class Bottle which can be a bottle of health or a bottle of mana
+// When a mage enters a cell with a bottle, he should drink it 
+// - i.e. his health/mana changes accordingly and the bottle disappears from the game

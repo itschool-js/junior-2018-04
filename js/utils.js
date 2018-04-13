@@ -30,7 +30,11 @@ class Direction extends XY {
  * @param {Array} arr 
  */
 function cloneArray(arr) {
-    // TODO: implement cloneArray
+    let newArr = [];
+    for (let x of arr) {
+        newArr.push('clone' in x ? x.clone() : x);
+    }
+    return newArr;
 }
 
 /**
@@ -40,5 +44,10 @@ function cloneArray(arr) {
  * @param {String} id 
  */
 function getItemById(arr, id) {
-    // TODO: implement getItemById
+    for (let x of arr) {
+        if ('id' in x && x.id === id) {
+            return x;
+        } 
+    }
+    return null;
 }

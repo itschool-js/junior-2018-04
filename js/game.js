@@ -1,6 +1,8 @@
 'use strict';
 
 class State {
+    // TODO: add spells to the state
+
     constructor(mages) {        
         this.mages = mages;     
     }
@@ -9,26 +11,6 @@ class State {
         return new State(cloneArray(this.mages));
     }
 }
-
-
-/*
-let state = new State([
-    new Mage(1, 'dodgerblue', new XY(4, 5)),
-    new Mage(2, 'orange', new XY(10, 4))
-]);
-let newState = state.clone();
-console.log(state.mages);
-console.log(newState.mages);
-console.log(state.mages[0] == newState.mages[0]);
-*/
-
-
-
-/*
-let level = new Level(PLANS[0]);
-console.log(level.getCell(state, new XY(1, 2)));
-console.log(level.getCell(state, new XY(4, 5)));
-*/
 
 class Game {
     constructor(level, strategies) {
@@ -61,6 +43,9 @@ class Game {
         // mages
         for (let mage of state.mages) {
             let act = getItemById(actions, mage.id);
+            if (!act) {
+                continue;
+            }
             switch (act.type) {
                 case ActionType.MOVE:
                     if (act.dir.validate()) {
@@ -71,13 +56,13 @@ class Game {
                         }
                     }
                     break;
-                // case ActionType.CAST:
-                //     let spell = act.spell;
-                //     spell.mageId = mage.id;                    
-                //     spell.xy = mage.xy.add(spell.dir);                    
-                //     mage.cast(spell);                    
-                //     state.spells.push(spell);                    
-                //     break;
+                case ActionType.CAST:
+                    let spell = act.spell;
+                    spell.mageId = mage.id;                    
+                    spell.xy = mage.xy.add(spell.dir);                    
+                    mage.cast(spell);                    
+                    state.spells.push(spell);                    
+                    break;
             }
         }
 
@@ -86,15 +71,12 @@ class Game {
 
         this.turn++;
         if (this.turn <= MAX_TURN) {
-            let self = this;
-            setTimeout(function () {
-                self.makeTurn();
-            }, TURN_DURATION);
+            setTimeout(this.makeTurn.bind(this), TURN_DURATION);
         }
     }
 }
 
-/*
+
 let level = new HtmlLevel(PLANS[0], GRID_SIZE);
 
 let strategies = [];
@@ -103,8 +85,10 @@ let strategies = [];
 strategies.push(new KeyboardMageStrategy(1));
 strategies.push(new KeyboardMageStrategy(2));
 
-let game = new Game(level, strategies);
-setTimeout(function() {
+ let game = new Game(level, strategies);
+setTimeout(function(){
     game.makeTurn();
 }, 0);
-*/
+
+
+

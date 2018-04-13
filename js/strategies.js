@@ -30,7 +30,7 @@ class KeyboardMageStrategy extends MageStrategy {
                 action.type = ActionType.MOVE;
                 action.dir = new Direction(0, -1);
                 break;
-            /*case 'j':
+            case 'j':
                 action.type = ActionType.CAST;
                 action.spell = new FireballSpell();
                 action.spell.dir = new Direction(-1, 0);
@@ -49,7 +49,7 @@ class KeyboardMageStrategy extends MageStrategy {
                 action.type = ActionType.CAST;
                 action.spell = new FireballSpell();
                 action.spell.dir = new Direction(0, -1);
-                break;*/
+                break;
             case 'q':
                 throw 'Stop the game';
         }
@@ -59,6 +59,7 @@ class KeyboardMageStrategy extends MageStrategy {
 
 class RandomMageStrategy extends MageStrategy {
     turn(state) {
+        // TODO: implement throwing a Fireball spell from time to time
         let dir = [new Direction(-1, 0), new Direction(1, 0), new Direction(0, -1), new Direction(0, 1)];
         return {
             id: this.id,
@@ -66,20 +67,4 @@ class RandomMageStrategy extends MageStrategy {
             dir: dir[Math.floor(Math.random() * dir.length)]
         }
     }
-
-    // turn(state) {
-    //     let action = { id: this.id };
-    //     let dir = [new Direction(-1, 0), new Direction(1, 0), new Direction(0, -1), new Direction(0, 1)];
-    //     let n = Math.floor(Math.random() * dir.length);
-    //     let chance = Math.floor(Math.random() * 100);
-    //     if (chance < 80) {
-    //         action.type = ActionType.MOVE;
-    //         action.dir = dir[n];
-    //     } else {            
-    //         action.type = ActionType.CAST;
-    //         action.spell = new FireballSpell();            
-    //         action.spell.dir = dir[n];
-    //     }        
-    //     return action;
-    // }
 }
