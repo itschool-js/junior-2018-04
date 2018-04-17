@@ -109,7 +109,7 @@ let strategies = [];
 strategies.push(new KeyboardMageStrategy(1));
 strategies.push(new KeyboardMageStrategy(2));
 
- let game = new Game(level, strategies);
+let game = new Game(level, strategies);
 setTimeout(function(){
     game.makeTurn();
 }, 0);
