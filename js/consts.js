@@ -45,6 +45,7 @@ const ActionType = {
     CAST: 'cast',
     NEW: 'new',
     GONE: 'gone',
-    APPLY: 'apply'
+    APPLY: 'apply',
+    IDLE: 'idle'
 }
 Object.freeze(ActionType);

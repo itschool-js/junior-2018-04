@@ -23,9 +23,27 @@ class Level {
             if (mage.xy.equals(xy)) {
                 return mage;
             }
-        }        
+        }
+        for (let spell of state.spells) {
+            if (spell.action.type != ActionType.GONE && spell.xy.equals(xy)) {
+                return spell;
+            }
+        }
+        for (let bottle of state.bottles) {
+            if (bottle.xy.equals(xy)) {
+                return bottle;
+            }
+        }
 
         return Cell.EMPTY;
+    }
+
+    getRandomEmptyCell(state) {
+        let xy;
+        do {
+            xy = new XY(Math.floor(Math.random() * this.width), Math.floor(Math.random() * this.height));
+        } while (this.getCell(state, xy) != Cell.EMPTY);
+        return xy;
     }
 }
 
@@ -46,18 +64,9 @@ class HtmlLevel extends Level {
 
         for (let mage of initState.mages) {
             let mageDiv = HtmlLevel.createDiv(mage.xy, mage.color);
-            mageDiv.id = 'mage' + mage.id;            
+            mageDiv.id = 'mage' + mage.id;
             planDiv.appendChild(mageDiv);
-        }
-
-        // level spells
-        for (let spell of state.spells) {            
-            // TODO: implement creation and moving the spells
-            if (spell.action.type == ActionType.GONE || spell.action.type == ActionType.APPLY) {
-                let spellDiv = document.getElementById('spell' + spell.id);
-                planDiv.removeChild(spellDiv);
-            }
-        }
+        }        
     }
 
     update(state) {
@@ -67,7 +76,35 @@ class HtmlLevel extends Level {
             let mageDiv = document.getElementById('mage' + mage.id);
             mageDiv.style.top = mage.xy.y * GRID_SIZE + 'px';
             mageDiv.style.left = mage.xy.x * GRID_SIZE + 'px';
-        }        
+        }
+
+        // level spells
+        for (let spell of state.spells) {
+            if (spell.action.type == ActionType.NEW) {
+                let spellDiv = HtmlLevel.createDiv(spell.xy, spell.color);
+                spellDiv.id = 'spell' + spell.id;
+                planDiv.appendChild(spellDiv);
+            } else if (spell.action.type == ActionType.MOVE) {
+                let spellDiv = document.getElementById('spell' + spell.id);
+                spellDiv.style.top = spell.xy.y * GRID_SIZE + 'px';
+                spellDiv.style.left = spell.xy.x * GRID_SIZE + 'px';
+            } else if (spell.action.type == ActionType.GONE || spell.action.type == ActionType.APPLY) {
+                let spellDiv = document.getElementById('spell' + spell.id);
+                planDiv.removeChild(spellDiv);
+            }
+        }
+
+        // bottles
+        for (let bottle of state.bottles) {
+            if (bottle.action.type == ActionType.NEW) {
+                let bottleDiv = HtmlLevel.createDiv(bottle.xy, bottle.type == HEALTH ? 'red' : 'blue');
+                bottleDiv.id = 'bottle' + bottle.id;                
+                planDiv.appendChild(bottleDiv);
+            } else if (bottle.action.type == ActionType.APPLY) {
+                let bottleDiv = document.getElementById('bottle' + bottle.id);
+                planDiv.removeChild(bottleDiv);
+            }
+        }
     }
 
     static createDiv(xy, color) {

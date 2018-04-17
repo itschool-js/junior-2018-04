@@ -1,8 +1,9 @@
 'use strict';
 
 class Mage {
-    constructor(id, color, xy, health = MAGE_HEALTH, mana = MAGE_MANA) {
+    constructor(id, teamId, color, xy, health = MAGE_HEALTH, mana = MAGE_MANA) {
         this.id = id;
+        this.teamId = teamId;
         this.color = color;
         this.xy = xy;
         this.health = health;
@@ -10,7 +11,7 @@ class Mage {
     }
 
     clone() {
-        let mage = new Mage(this.id, this.color, this.xy.clone(), this.health, this.mana);
+        let mage = new Mage(this.id, this.teamId, this.color, this.xy.clone(), this.health, this.mana);
         mage.action = this.action;
         return mage;
     }
@@ -24,12 +25,25 @@ class Mage {
         this.mana -= spell.cost;
         this.action = { type: ActionType.CAST, spell: spell };
     }
+
+    interact(cell, dir) {
+        if (cell instanceof Bottle) {
+            let bottle = cell;
+            this.move(dir);
+            bottle.action = { type: ActionType.APPLY };
+            if (bottle.type == HEALTH) {
+                this.health += bottle.value;
+            } else {
+                this.mana += bottle.value;
+            }
+        } else {
+            this.idle();
+        }
+    }
 }
 
 class FireballSpell {
     constructor(mageId, xy, dir, id) {
-        let idCounter = 0;
-
         // constructor
         this.mageId = mageId;
         this.xy = xy;
@@ -55,6 +69,8 @@ class FireballSpell {
 
     move() {
         // TODO: implement
+        this.xy = this.xy.add(this.dir);
+        this.action = { type: ActionType.MOVE };
     }
 
     interact(cell) {
@@ -67,10 +83,30 @@ class FireballSpell {
 
     apply(mage) {
         this.action = { type: ActionType.APPLY, targetId: mage.id };
-        mage.health -= this.power;        
+        mage.health -= this.power;
     }
 }
 
 // TODO: implement class Bottle which can be a bottle of health or a bottle of mana
 // When a mage enters a cell with a bottle, he should drink it 
 // - i.e. his health/mana changes accordingly and the bottle disappears from the game
+
+class Bottle {
+    constructor(type, value, xy, id) {
+        this.type = type;
+        this.value = value;
+        this.xy = xy;
+        if (id) {
+            this.id = id;
+        } else {
+            this.id = ++idCounter;
+            this.action = { type: ActionType.NEW };
+        }
+    }
+
+    clone() {
+        let bottle = new Bottle(this.type, this.value, this.xy, this.id);
+        bottle.action = this.action;
+        return bottle;
+    }
+}
