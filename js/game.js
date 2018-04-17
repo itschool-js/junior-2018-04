@@ -3,12 +3,13 @@
 class State {
     // TODO: add spells to the state
 
-    constructor(mages) {        
+    constructor(mages, spells) {        
         this.mages = mages;     
+        this.spells = spells;
     }
 
     clone() {
-        return new State(cloneArray(this.mages));
+        return new State(cloneArray(this.mages), cloneArray(this.mages));
     }
 }
 
@@ -39,7 +40,30 @@ class Game {
 
         // spells
         // TODO: process spells     
-
+        for (let spell of state.spells) {
+            let act = getItemById(actions, spell.id);
+            if (!act) {
+                continue;
+            }
+            switch (act.type) {
+                case ActionType.MOVE:
+                    if (act.dir.validate()) {
+                        let xy = spell.xy.add(act.dir);
+                        let cell = this.level.getCell(state, xy);
+                        if (cell === Cell.EMPTY) {
+                            spell.move(act.dir);
+                        }
+                    }
+                    break;
+                /*case ActionType.APPLY:
+                    for (let spell of state.spells) {
+                        if ( mage.xy == spells.xy ){
+                            spells.apply(mage);
+                            break;
+                        }                  
+                    break;*/
+            }
+        }
         // mages
         for (let mage of state.mages) {
             let act = getItemById(actions, mage.id);
