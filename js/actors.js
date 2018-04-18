@@ -40,6 +40,10 @@ class Mage {
             this.idle();
         }
     }
+
+    idle() {
+        this.action = { type: ActionType.IDLE };
+    }
 }
 
 class FireballSpell {
@@ -78,6 +82,8 @@ class FireballSpell {
             this.action = { type: ActionType.GONE };
         } else if (cell instanceof Mage) {
             this.apply(cell);
+        } else {
+            this.move(cell.xy);
         }
     }
 

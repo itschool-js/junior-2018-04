@@ -32,7 +32,7 @@ class State {
 class Game {
     constructor(level, teams, strategies) {
         this.level = level;
-        this.turn = 1;
+        this.turn = 0;
 
         this.state = new State(teams, [], [], []);
         /*for (let strat of strategies) {
@@ -49,13 +49,23 @@ class Game {
     }
 
     makeTurn() {
+        let state = this.state.clone();
+
+        let isMageTurn = this.turn % MAGE_TURN == 0;
+
         let actions = [];
-        for (let strat of this.strategies) {
-            actions.push(strat.turn(this.state));
+        if (isMageTurn) {
+            for (let strat of this.strategies) {
+                actions.push(strat.turn(this.state));
+            }
         }
 
-        let state = this.state.clone();
-        
+        state.spells = state.spells.filter(function (spell) {
+            return spell.action.type != ActionType.GONE && spell.action.type != ActionType.APPLY;
+        });
+
+        state.bottles = state.bottles.filter(bottle => bottle.action.type != ActionType.APPLY);
+
         // spells
         // TODO: process spells     
         for (let spell of state.spells) {
@@ -68,31 +78,33 @@ class Game {
             }
         }
 
-        // mages
-        for (let mage of state.mages) {
-            let act = getItemById(actions, mage.id);
-            if (!act) {
-                continue;
-            }
-            switch (act.type) {
-                case ActionType.MOVE:
-                    if (act.dir.validate()) {
-                        let xy = mage.xy.add(act.dir);
-                        let cell = this.level.getCell(state, xy);
-                        if (cell === Cell.EMPTY) {
-                            mage.move(act.dir);
-                        } else {
-                            mage.interact(cell, act.dir);
+        if (isMageTurn) {
+            // mages
+            for (let mage of state.mages) {
+                let act = getItemById(actions, mage.id);
+                if (!act) {
+                    continue;
+                }
+                switch (act.type) {
+                    case ActionType.MOVE:
+                        if (act.dir.validate()) {
+                            let xy = mage.xy.add(act.dir);
+                            let cell = this.level.getCell(state, xy);
+                            if (cell === Cell.EMPTY) {
+                                mage.move(act.dir);
+                            } else {
+                                mage.interact(cell, act.dir);
+                            }
                         }
-                    }
-                    break;
-                case ActionType.CAST:
-                    let spell = act.spell;
-                    spell.mageId = mage.id;
-                    spell.xy = mage.xy.add(spell.dir);
-                    mage.cast(spell);
-                    state.spells.push(spell);
-                    break;
+                        break;
+                    case ActionType.CAST:
+                        let spell = act.spell;
+                        spell.mageId = mage.id;
+                        spell.xy = mage.xy.add(spell.dir);
+                        mage.cast(spell);
+                        state.spells.push(spell);
+                        break;
+                }
             }
         }
 
@@ -103,14 +115,16 @@ class Game {
             }
         }
 
-        // bottle generation
-        // let chance = Math.floor(Math.random() * BOTTLE_CHANCE);
-        // if (chance == 0) {
-        // let type = Math.random() <= BOTTLE_HEALTH_PROB ? HEALTH : MANA;
-        // let value = type == HEALTH ? BOTTLE_HEALTH : BOTTLE_MANA;
-        // let bottle = new Bottle(type, value, this.level.getRandomEmptyCell(state));
-        // state.bottles.push(bottle);
-        // }
+        if (isMageTurn) {
+            // bottle generation
+            let chance = Math.floor(Math.random() * BOTTLE_CHANCE);
+            if (chance == 0) {
+                let type = Math.random() <= BOTTLE_HEALTH_PROB ? HEALTH : MANA;
+                let value = (type == HEALTH) ? BOTTLE_HEALTH : BOTTLE_MANA;
+                let bottle = new Bottle(type, value, this.level.getRandomEmptyCell(state));
+                state.bottles.push(bottle);
+            }
+        }
 
         this.state = state;
         this.level.update(this.state);

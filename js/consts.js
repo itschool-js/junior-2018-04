@@ -2,8 +2,10 @@
 
 const GRID_SIZE = 20;
 
-const MAX_TURN = 200;
-const TURN_DURATION = 200;
+const MAGE_TURN = 6;
+
+const MAX_TURN = 200 * MAGE_TURN;
+const TURN_DURATION = 100;
 
 const MAGE_HEALTH = 100;
 const MAGE_MANA = 100;
