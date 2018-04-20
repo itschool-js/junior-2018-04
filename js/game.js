@@ -218,27 +218,22 @@ strategies.push(new KeyboardMageStrategy(teams[1], 2));
 // strategies.push(new StrategyBlueTeam2(teams[0], 'blue2'));
 // strategies.push(new StrategyBlueTeam3(teams[0], 'blue3'));
 // strategies.push(new StrategyBlueTeam4(teams[0], 'blue4'));
-// strategies.push(new StrategyBlueTeam5(teams[0], 'blue5'));
 // strategies.push(new StrategyOrangeTeam1(teams[1], 'orange1'));
 // strategies.push(new StrategyOrangeTeam2(teams[1], 'orange2'));
 // strategies.push(new StrategyOrangeTeam3(teams[1], 'orange3'));
 // strategies.push(new StrategyOrangeTeam4(teams[1], 'orange4'));
-// strategies.push(new StrategyOrangeTeam5(teams[1], 'orange5'));
 // strategies.push(new StrategyRedTeam1(teams[2], 'red1'));
 // strategies.push(new StrategyRedTeam2(teams[2], 'red2'));
 // strategies.push(new StrategyRedTeam3(teams[2], 'red3'));
 // strategies.push(new StrategyRedTeam4(teams[2], 'red4'));
-// strategies.push(new StrategyRedTeam5(teams[2], 'red5'));
 // strategies.push(new StrategyPurpleTeam1(teams[3], 'purple1'));
 // strategies.push(new StrategyPurpleTeam2(teams[3], 'purple2'));
 // strategies.push(new StrategyPurpleTeam3(teams[3], 'purple3'));
 // strategies.push(new StrategyPurpleTeam4(teams[3], 'purple4'));
-// strategies.push(new StrategyPurpleTeam5(teams[3], 'purple5'));
 // strategies.push(new StrategyYellowTeam1(teams[4], 'yellow1'));
 // strategies.push(new StrategyYellowTeam2(teams[4], 'yellow2'));
 // strategies.push(new StrategyYellowTeam3(teams[4], 'yellow3'));
 // strategies.push(new StrategyYellowTeam4(teams[4], 'yellow4'));
-// strategies.push(new StrategyYellowTeam5(teams[4], 'yellow5'));
 
 let game = new Game(level, teams, strategies);
 setTimeout(function () {
