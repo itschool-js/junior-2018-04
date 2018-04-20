@@ -7,11 +7,6 @@ class Level {
         this.width = this.plan[0].length;
     }
 
-    /**
-     * 
-     * @param {*} state 
-     * @param {*} xy 
-     */
     getCell(state, xy) {
         // check static content
         if (this.plan[xy.y][xy.x] != Cell.EMPTY) {
@@ -50,8 +45,8 @@ class Level {
 class HtmlLevel extends Level {
     init(initState) {
         let planDiv = document.getElementById('plan');
-        planDiv.style.width = this.width * this.gridSize + 'px';
-        planDiv.style.height = this.height * this.gridSize + 'px';
+        planDiv.style.width = this.width * GRID_SIZE + 'px';
+        planDiv.style.height = this.height * GRID_SIZE + 'px';
 
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
@@ -65,14 +60,36 @@ class HtmlLevel extends Level {
         for (let mage of initState.mages) {
             let mageDiv = HtmlLevel.createDiv(mage.xy, mage.color);
             mageDiv.id = 'mage' + mage.id;
+            mageDiv.style.zIndex = 1;
             planDiv.appendChild(mageDiv);
-        }        
+        }
+
+        let table = document.getElementById('teams').getElementsByTagName('tbody')[0];
+        for (let team of initState.teams) {
+            let tdName = document.createElement('td');
+            tdName.innerHTML = team.id;
+            let tdScore = document.createElement('td');
+            tdScore.id = 'td' + team.id;
+            tdScore.innerHTML = team.score;
+            let tr = document.createElement('tr');
+            let color = team.color;
+            if (color == 'blue') { color = 'dodgerblue'; }
+            if (color == 'purple') { color = 'mediumpurple'; }
+            tr.style.color = color;
+            tr.appendChild(tdName);
+            tr.appendChild(tdScore);
+            table.appendChild(tr);
+        }
     }
 
     update(state) {
         let planDiv = document.getElementById('plan');
 
         for (let mage of state.mages) {
+            if (!mage.action) {
+                continue;
+            }
+
             let mageDiv = document.getElementById('mage' + mage.id);
             mageDiv.style.top = mage.xy.y * GRID_SIZE + 'px';
             mageDiv.style.left = mage.xy.x * GRID_SIZE + 'px';
@@ -81,8 +98,9 @@ class HtmlLevel extends Level {
         // level spells
         for (let spell of state.spells) {
             if (spell.action.type == ActionType.NEW) {
-                let spellDiv = HtmlLevel.createDiv(spell.xy, spell.color);
+                let spellDiv = HtmlLevel.createDiv(spell.xy, 'yellow');
                 spellDiv.id = 'spell' + spell.id;
+                spellDiv.style.zIndex = 2;
                 planDiv.appendChild(spellDiv);
             } else if (spell.action.type == ActionType.MOVE) {
                 let spellDiv = document.getElementById('spell' + spell.id);
@@ -98,13 +116,21 @@ class HtmlLevel extends Level {
         for (let bottle of state.bottles) {
             if (bottle.action.type == ActionType.NEW) {
                 let bottleDiv = HtmlLevel.createDiv(bottle.xy, bottle.type == HEALTH ? 'red' : 'blue');
-                bottleDiv.id = 'bottle' + bottle.id;                
+                bottleDiv.id = 'bottle' + bottle.id;
+                bottleDiv.style.zIndex = 0;
                 planDiv.appendChild(bottleDiv);
             } else if (bottle.action.type == ActionType.APPLY) {
                 let bottleDiv = document.getElementById('bottle' + bottle.id);
                 planDiv.removeChild(bottleDiv);
             }
         }
+
+        // table
+        for (let team of state.teams) {
+            let tdScore = document.getElementById('td' + team.id);
+            tdScore.innerHTML = team.score;
+        }
+
     }
 
     static createDiv(xy, color) {

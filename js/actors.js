@@ -1,17 +1,19 @@
 'use strict';
 
 class Mage {
-    constructor(id, teamId, color, xy, health = MAGE_HEALTH, mana = MAGE_MANA) {
+    constructor(id, teamId, color, xy, status = Status.LIVE, health = MAGE_HEALTH, mana = MAGE_MANA, effects = []) {
         this.id = id;
         this.teamId = teamId;
         this.color = color;
         this.xy = xy;
+        this.status = status;
         this.health = health;
         this.mana = mana;
+        this.effects = effects;
     }
 
     clone() {
-        let mage = new Mage(this.id, this.teamId, this.color, this.xy.clone(), this.health, this.mana);
+        let mage = new Mage(this.id, this.teamId, this.color, this.xy.clone(), this.status, this.health, this.mana, cloneArray(this.effects));
         mage.action = this.action;
         return mage;
     }
@@ -26,7 +28,11 @@ class Mage {
         this.action = { type: ActionType.CAST, spell: spell };
     }
 
-    interact(cell, dir) {
+    idle() {
+        this.action = { type: ActionType.IDLE };
+    }
+
+    /*interact(cell, dir) {
         if (cell instanceof Bottle) {
             let bottle = cell;
             this.move(dir);
@@ -39,42 +45,59 @@ class Mage {
         } else {
             this.idle();
         }
-    }
-
-    idle() {
-        this.action = { type: ActionType.IDLE };
+    }*/
+    interact(cell, dir) {
+        if (cell instanceof Bottle) {
+            let bottle = cell;
+            this.move(dir);
+            bottle.action = { type: ActionType.APPLY };
+            (new EnergyEffect(bottle.type, bottle.value)).apply(this);
+        } else {
+            this.idle();
+        }
     }
 }
 
-class FireballSpell {
-    constructor(mageId, xy, dir, id) {
-        // constructor
+class Spell {
+    constructor(mageId, id) {
         this.mageId = mageId;
-        this.xy = xy;
-        this.dir = dir;
         if (id) {
             this.id = id;
         } else {
             this.id = ++idCounter;
             this.action = { type: ActionType.NEW };
         }
-        this.color = 'yellow';
+    }
+
+    get cost() {}
+
+    get power() {}    
+
+    apply() {}
+
+    validate(mage) {}
+}
+
+class MovingSpell extends Spell {
+    constructor(mageId, xy, dir, id) {
+        super(mageId, id);
+        this.xy = xy;
+        this.dir = dir;        
     }
 
     clone() {
-        var spell = new FireballSpell(this.mageId, this.xy, this.dir, this.id);
+        var spell = new this.constructor(this.mageId, this.xy, this.dir, this.id);
         spell.action = this.action;
         return spell;
     }
 
-    get cost() { return FIREBALL_COST; }
-
-    get power() { return FIREBALL_POWER; }
-
     move() {
-        // TODO: implement
         this.xy = this.xy.add(this.dir);
         this.action = { type: ActionType.MOVE };
+    }
+
+    apply(mage) {
+        this.action = { type: ActionType.APPLY, targetId: mage.id };
     }
 
     interact(cell) {
@@ -87,15 +110,168 @@ class FireballSpell {
         }
     }
 
-    apply(mage) {
-        this.action = { type: ActionType.APPLY, targetId: mage.id };
-        mage.health -= this.power;
+    validate(mage) {
+        if (!this.dir || !this.dir.validate()) {
+            return null;
+        }
+        let spell = new this.constructor();
+        spell.dir = this.dir;
+
+        if (mage.mana < spell.cost) {
+            return null;
+        }
+
+        let xy = mage.xy.add(spell.dir);
+        let cell = GameEntities.instance.level.getCell(GameEntities.instance.state, xy);
+        if (cell === Cell.WALL || cell instanceof Mage) {
+            return null;
+        }
+
+        spell.mageId = mage.id;
+        spell.xy = xy;        
+        return spell;
     }
 }
 
-// TODO: implement class Bottle which can be a bottle of health or a bottle of mana
-// When a mage enters a cell with a bottle, he should drink it 
-// - i.e. his health/mana changes accordingly and the bottle disappears from the game
+class FireballSpell extends MovingSpell {
+    constructor(mageId, xy, dir, id) {
+        super(mageId, xy, dir, id);
+        this.color = 'yellow';
+    }
+
+    get cost() { return FIREBALL_COST; }
+
+    get power() { return FIREBALL_POWER; }
+
+    apply(mage) {
+        super.apply(mage);
+        mage.health -= this.power;        
+        // let points = HIT_BONUS;
+        // document.dispatchEvent(new CustomEvent(ScoreEventType, { detail: { mageId: this.mageId, targetId: mage.id, points: points } }));
+    }
+}
+
+class ImmediateSpell extends Spell {
+    constructor(mageId, targetId, id) {
+        super(mageId, id);
+        this.targetId = targetId;
+    }
+
+    validate(mage) {
+        if (!this.targetId) {
+            return null;
+        }
+        let spell = new this.constructor();
+        spell.targetId = this.targetId;
+
+        if (mage.mana < spell.cost) {
+            return null;
+        }
+
+        let targetMage = getItemById(GameEntities.instance.state.mages, spell.targetId);
+
+        if (targetMage && targetMage.status != Status.DEAD) {
+            spell.targetMage = targetMage;
+            return spell;
+        } else {
+            return null;
+        }
+    }
+}
+
+class CureSpell extends ImmediateSpell {
+    get cost() { return CURE_COST; }
+
+    get power() { return CURE_POWER; }
+
+    apply() {        
+        new EnergyEffect(HEALTH, this.power).apply(this.targetMage);
+    }
+}
+
+
+class Effect {
+    constructor(duration, action, id) {
+        this.duration = duration;     
+        this.action = action;
+        this.id = id;
+    }
+
+    turn(mage) {
+        if (this.action.type == ActionType.NEW) {
+            return;
+        }
+        this.duration--;
+        if (this.duration == 0) {
+            this.remove(mage);
+        }
+    }
+
+    apply(mage) {        
+        mage.effects.push(this);
+    }
+
+    /**
+     * Remove this effect from the mage
+     * @param {Mage} mage 
+     */
+    remove(mage) {        
+        // TODO: implement the method
+    }
+}
+
+class EnergyEffect extends Effect {
+    constructor(type, value, duration = 1, action = {type: ActionType.NEW}, id = ++idCounter) {
+        super(duration, action, id);
+        this.type = type;
+        this.value = value;
+    }
+
+    clone() {
+        return new EnergyEffect(this.type, this.value, this.duration, {type: ActionType.IDLE}, this.id);
+    }
+
+    apply(mage) {
+        super.apply(mage);
+        if (this.type == HEALTH) {
+            mage.health = Math.min(mage.health + this.value, MAGE_HEALTH);
+            // if (mage.health <= 0) {
+            //     mage.action = { type: ActionType.KILLED };
+            //     mage.status = Status.DEAD;
+            //     (new DeathEffect).apply(mage);
+            // }
+        } else if (this.type == MANA) {
+            mage.mana = Math.min(mage.mana + this.value, MAGE_MANA);
+        }
+        
+    }
+}
+
+class DeathEffect extends Effect {
+    constructor(duration = DEATH_EFFECT_DURATION, action = {type: ActionType.NEW}, id = ++idCounter) {
+        super(duration, action, id);
+    }
+
+    clone() {
+        return new DeathEffect(this.duration, {type: ActionType.IDLE}, this.id);
+    }
+
+    apply(mage) {
+        mage.effects = [];
+        mage.status = Status.DEAD;
+        super.apply(mage);
+    }
+
+    remove(mage) {
+        super.remove(mage);
+        mage.action = { type: ActionType.NEW };
+        mage.status = Status.LIVE;
+        mage.health = MAGE_HEALTH;
+        mage.mana = MAGE_MANA;
+        mage.xy = GameEntities.instance.level.getRandomEmptyCell(GameEntities.instance.state);
+    }
+}
+
 
 class Bottle {
     constructor(type, value, xy, id) {

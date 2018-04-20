@@ -2,10 +2,11 @@
 
 const GRID_SIZE = 20;
 
-const MAGE_TURN = 6;
+const MAGE_TICK = 6;
+const SPELL_TICK = 1;
 
-const MAX_TURN = 200 * MAGE_TURN;
-const TURN_DURATION = 100;
+const MAX_TURN = 200 * MAGE_TICK;
+const TICK_DURATION = 100;
 
 const MAGE_HEALTH = 100;
 const MAGE_MANA = 100;
@@ -22,14 +23,8 @@ const BOTTLE_HEALTH_PROB = 0.5;
 const FIREBALL_COST = 10;
 const FIREBALL_POWER = 20;
 
-const ICE_BOLT_COST = 20;
-const ICE_BOLT_POWER = 5;
-
 const CURE_COST = 40;
 const CURE_POWER = 50;
-
-const SPEED_COST = 40;
-const SPEED_POWER = 5;
 
 const HIT_BONUS = 20;
 const DEATH_BONUS = 4 * HIT_BONUS;
@@ -45,9 +40,18 @@ Object.freeze(Cell);
 const ActionType = {
     MOVE: 'move',
     CAST: 'cast',
+    IDLE: 'idle',
     NEW: 'new',
     GONE: 'gone',
     APPLY: 'apply',
-    IDLE: 'idle'
+    KILLED: 'killed'
 }
 Object.freeze(ActionType);
+
+const Status = {
+    LIVE: 'live',
+    DEAD: 'dead'
+}
+Object.freeze(Status);
+
+const ScoreEventType = 'score';

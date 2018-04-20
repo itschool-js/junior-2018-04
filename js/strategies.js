@@ -6,7 +6,7 @@ class MageStrategy {
         this.id = myId;
     }
 
-    init(state) {}
+    init(level, state) {}
     turn(state) {}
 }
 
@@ -51,6 +51,11 @@ class KeyboardMageStrategy extends MageStrategy {
                 action.spell = new FireballSpell();
                 action.spell.dir = new Direction(0, -1);
                 break;
+            case 'o':
+                action.type = ActionType.CAST;
+                action.spell = new CureSpell();
+                action.spell.targetId = this.id;
+                break;
             case 'q':
                 throw 'Stop the game';
         }
@@ -60,7 +65,6 @@ class KeyboardMageStrategy extends MageStrategy {
 
 class RandomMageStrategy extends MageStrategy {
     turn(state) {
-        // TODO: implement throwing a Fireball spell from time to time
         let action = { id: this.id };
         let dir = [new Direction(-1, 0), new Direction(1, 0), new Direction(0, -1), new Direction(0, 1)];
         let n = Math.floor(Math.random() * dir.length);
