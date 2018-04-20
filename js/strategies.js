@@ -93,39 +93,53 @@ class ArtificialIntelligence extends MageStrategy{
         let coor = mage.xy;
 
         let target_mage;
+        let target_spell;
 
         for (let d of dir) {
 
             let new_coor = coor;
-
+            top:
             while ( true ) {
                 new_coor = new_coor.add(d);
                 if ( level.getCell(state, new_coor) != Cell.EMPTY ) {
                     if ( level.getCell(state, new_coor) instanceof Mage ) {
                         target_mage = d;
-                    }
-                    break;
+                    }/* else if ( level.getCell(state, new_coor) instanceof FireballSpell ) {
+                        target_spell = d;
+                    }*/
+                    break top;
                 }
             }
-
-            if (target_mage) {
-                action.type = ActionType.CAST;
-                action.spell = new FireballSpell();            
-                action.spell.dir = target_mage;
-                
-            } else {  
-                let n = Math.floor(Math.random() * dir.length);
-                let chance = Math.floor(Math.random() * 100);          
-                if (chance < 80) {
-                    action.type = ActionType.MOVE;
-                    action.dir = dir[n];
-                } else {            
-                    action.type = ActionType.CAST;
-                    action.spell = new FireballSpell();            
-                    action.spell.dir = dir[n];
-                }   
-                return action;    
-            }     
         }
+        
+        if (target_mage) {
+            action.type = ActionType.CAST;
+            action.spell = new FireballSpell();            
+            action.spell.dir = target_mage;
+            
+        }/* else if (target_spell) {
+            if ( target_spell == dir[0] || target_spell == dir[1] ) {
+                if ( level.getCell(state,cor.add(dir[2])) == Cell.EMPTY ) {
+                    action.type = ActionType.MOVE;
+                    action.dir = dir[2];
+                } else {
+                    action.type = ActionType.MOVE;
+                    action.dir = dir[3];
+                }
+            } else if ( target_spell == dir[2] || target_spell == dir[3] ) {
+                if ( level.getCell(state,cor.add(dir[0])) == Cell.EMPTY ) {
+                    action.type = ActionType.MOVE;
+                    action.dir = dir[0];                
+                } else {
+                    action.type = ActionType.MOVE;
+                    action.dir = dir[1];
+                }
+            } 
+        }*/ else {  
+            let n = Math.floor(Math.random() * dir.length);
+            action.type = ActionType.MOVE;
+            action.dir = dir[n]; 
+        }     
+        return action;  
     }
 }
