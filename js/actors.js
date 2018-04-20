@@ -86,7 +86,7 @@ class MovingSpell extends Spell {
     }
 
     clone() {
-        var spell = new this.constructor(this.mageId, this.xy, this.dir, this.id);
+        var spell = new ???(this.mageId, this.xy, this.dir, this.id);
         spell.action = this.action;
         return spell;
     }
@@ -114,7 +114,7 @@ class MovingSpell extends Spell {
         if (!this.dir || !this.dir.validate()) {
             return null;
         }
-        let spell = new this.constructor();
+        let spell = new ???();
         spell.dir = this.dir;
 
         if (mage.mana < spell.cost) {
@@ -161,7 +161,7 @@ class ImmediateSpell extends Spell {
         if (!this.targetId) {
             return null;
         }
-        let spell = new this.constructor();
+        let spell = new ???();
         spell.targetId = this.targetId;
 
         if (mage.mana < spell.cost) {
