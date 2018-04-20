@@ -51,14 +51,15 @@ class HtmlLevel extends Level {
         for (let y = 0; y < this.height; y++) {
             for (let x = 0; x < this.width; x++) {
                 if (this.plan[y][x] == '#') {
-                    let wall = HtmlLevel.createDiv(new XY(x, y), 'grey');
+                    let wall = HtmlLevel.createDiv(new XY(x, y), 'wall');
+                    wall.style.backgroundSize = 'auto';
                     planDiv.appendChild(wall);
                 }
             }
         }
 
         for (let mage of initState.mages) {
-            let mageDiv = HtmlLevel.createDiv(mage.xy, mage.color);
+            let mageDiv = HtmlLevel.createDiv(mage.xy, 'mage_' + mage.color);
             mageDiv.id = 'mage' + mage.id;
             mageDiv.style.zIndex = 1;
             planDiv.appendChild(mageDiv);
@@ -91,21 +92,40 @@ class HtmlLevel extends Level {
             }
 
             let mageDiv = document.getElementById('mage' + mage.id);
-            mageDiv.style.top = mage.xy.y * GRID_SIZE + 'px';
-            mageDiv.style.left = mage.xy.x * GRID_SIZE + 'px';
+
+            if (mage.action.type == ActionType.KILLED) {
+                mageDiv.style.opacity = 0;
+                continue;
+            }
+
+            if (mage.action.type == ActionType.NEW) {
+                mageDiv.style.opacity = 1;
+            }
+
+            if (mage.status == Status.LIVE && state.tick % MAGE_TICK == 0) {
+                let top = mage.xy.y * GRID_SIZE + 'px';
+                let left = mage.xy.x * GRID_SIZE + 'px';
+                mageDiv.animate({ top: [mageDiv.style.top, top], left: [mageDiv.style.left, left] }, TICK_DURATION * MAGE_TICK);
+                mageDiv.style.top = top;
+                mageDiv.style.left = left;
+            }
         }
 
         // level spells
         for (let spell of state.spells) {
             if (spell.action.type == ActionType.NEW) {
-                let spellDiv = HtmlLevel.createDiv(spell.xy, 'yellow');
+                let spellDiv = HtmlLevel.createDiv(spell.xy, 'fireball');
                 spellDiv.id = 'spell' + spell.id;
                 spellDiv.style.zIndex = 2;
+                spellDiv.animate({ transform: ['rotate(0)', 'rotate(360deg)'] }, { duration: TICK_DURATION * 20, iterations: Infinity });
                 planDiv.appendChild(spellDiv);
             } else if (spell.action.type == ActionType.MOVE) {
                 let spellDiv = document.getElementById('spell' + spell.id);
-                spellDiv.style.top = spell.xy.y * GRID_SIZE + 'px';
-                spellDiv.style.left = spell.xy.x * GRID_SIZE + 'px';
+                let top = spell.xy.y * GRID_SIZE + 'px';
+                let left = spell.xy.x * GRID_SIZE + 'px';
+                spellDiv.animate({ top: [spellDiv.style.top, top], left: [spellDiv.style.left, left] }, TICK_DURATION * SPELL_TICK);
+                spellDiv.style.top = top;
+                spellDiv.style.left = left;
             } else if (spell.action.type == ActionType.GONE || spell.action.type == ActionType.APPLY) {
                 let spellDiv = document.getElementById('spell' + spell.id);
                 planDiv.removeChild(spellDiv);
@@ -115,7 +135,7 @@ class HtmlLevel extends Level {
         // bottles
         for (let bottle of state.bottles) {
             if (bottle.action.type == ActionType.NEW) {
-                let bottleDiv = HtmlLevel.createDiv(bottle.xy, bottle.type == HEALTH ? 'red' : 'blue');
+                let bottleDiv = HtmlLevel.createDiv(bottle.xy, 'bottle_' + bottle.type);
                 bottleDiv.id = 'bottle' + bottle.id;
                 bottleDiv.style.zIndex = 0;
                 planDiv.appendChild(bottleDiv);
@@ -133,11 +153,12 @@ class HtmlLevel extends Level {
 
     }
 
-    static createDiv(xy, color) {
+    static createDiv(xy, icon) {
         let div = document.createElement('div');
         div.style.width = GRID_SIZE + 'px';
         div.style.height = GRID_SIZE + 'px';
-        div.style.backgroundColor = color;
+        div.style.backgroundImage = `url(img/${icon}.png)`;
+        div.style.backgroundSize = 'cover';
         div.style.top = xy.y * GRID_SIZE + 'px';
         div.style.left = xy.x * GRID_SIZE + 'px';
         div.style.position = 'absolute';

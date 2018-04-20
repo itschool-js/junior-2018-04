@@ -86,7 +86,7 @@ class MovingSpell extends Spell {
     }
 
     clone() {
-        var spell = new ???(this.mageId, this.xy, this.dir, this.id);
+        var spell = new this.constructor(this.mageId, this.xy, this.dir, this.id);
         spell.action = this.action;
         return spell;
     }
@@ -114,7 +114,7 @@ class MovingSpell extends Spell {
         if (!this.dir || !this.dir.validate()) {
             return null;
         }
-        let spell = new ???();
+        let spell = new this.constructor();
         spell.dir = this.dir;
 
         if (mage.mana < spell.cost) {
@@ -145,9 +145,9 @@ class FireballSpell extends MovingSpell {
 
     apply(mage) {
         super.apply(mage);
-        mage.health -= this.power;        
-        // let points = HIT_BONUS;
-        // document.dispatchEvent(new CustomEvent(ScoreEventType, { detail: { mageId: this.mageId, targetId: mage.id, points: points } }));
+        (new EnergyEffect(HEALTH, -this.power)).apply(mage);
+        let points = mage.status == Status.DEAD ? DEATH_BONUS : HIT_BONUS;
+        document.dispatchEvent(new CustomEvent(ScoreEventType, { detail: { mageId: this.mageId, targetId: mage.id, points: points } }));
     }
 }
 
@@ -161,7 +161,7 @@ class ImmediateSpell extends Spell {
         if (!this.targetId) {
             return null;
         }
-        let spell = new ???();
+        let spell = new this.constructor();
         spell.targetId = this.targetId;
 
         if (mage.mana < spell.cost) {
@@ -216,7 +216,7 @@ class Effect {
      * @param {Mage} mage 
      */
     remove(mage) {        
-        // TODO: implement the method
+        mage.effects = mage.effects.filter(eff => eff !== this);
     }
 }
 
@@ -235,11 +235,10 @@ class EnergyEffect extends Effect {
         super.apply(mage);
         if (this.type == HEALTH) {
             mage.health = Math.min(mage.health + this.value, MAGE_HEALTH);
-            // if (mage.health <= 0) {
-            //     mage.action = { type: ActionType.KILLED };
-            //     mage.status = Status.DEAD;
-            //     (new DeathEffect).apply(mage);
-            // }
+            if (mage.health <= 0) {
+                mage.action = { type: ActionType.KILLED };
+                (new DeathEffect).apply(mage);
+            }
         } else if (this.type == MANA) {
             mage.mana = Math.min(mage.mana + this.value, MAGE_MANA);
         }

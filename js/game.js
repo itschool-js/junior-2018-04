@@ -48,11 +48,11 @@ class Game {
 
         this.state = new State(teams, [], [], []);
 
-        // for (let strat of strategies) {
-        //     this.state.mages.push(new Mage(strat.id, strat.team.id, strat.team.color, this.level.getRandomEmptyCell(this.state)));
-        // }
-        this.state.mages.push(new Mage(strategies[0].id, strategies[0].team.id, strategies[0].team.color, new XY(4, 5)));
-        this.state.mages.push(new Mage(strategies[1].id, strategies[1].team.id, strategies[1].team.color, new XY(10, 4)));
+        for (let strat of strategies) {
+            this.state.mages.push(new Mage(strat.id, strat.team.id, strat.team.color, this.level.getRandomEmptyCell(this.state)));
+        }
+        // this.state.mages.push(new Mage(strategies[0].id, strategies[0].team.id, strategies[0].team.color, new XY(4, 5)));
+        // this.state.mages.push(new Mage(strategies[1].id, strategies[1].team.id, strategies[1].team.color, new XY(10, 4)));
 
         this.strategies = strategies;
         for (let strat of strategies) {
@@ -65,12 +65,15 @@ class Game {
         let state = GameEntities.instance.state = this.state.clone();
         state.tick = this.tick;
 
-        let isMageTurn = this.tick % MAGE_TICK == 0;        
+        let isMageTurn = this.tick % MAGE_TICK == 0;
 
         let actions = [];
         if (isMageTurn) {
             for (let strat of this.strategies) {
+                let mage = getItemById(this.state.mages, strat.id);
+                if (mage.status == Status.LIVE) {
                     actions.push(strat.turn(this.state));
+                }
             }
         }
 
@@ -199,41 +202,41 @@ class Game {
 }
 
 
-let level = new HtmlLevel(PLANS[0], GRID_SIZE);
+let level = new HtmlLevel(PLANS[1], GRID_SIZE);
 
 let teams = [];
-teams.push(new Team('Blue team', 'dodgerblue'));
+teams.push(new Team('Blue team', 'blue'));
 teams.push(new Team('Orange team', 'orange'));
-// teams.push(new Team('Red team', 'red'));
-// teams.push(new Team('Purple team', 'purple'));
-// teams.push(new Team('Yellow team', 'yellow'));
+teams.push(new Team('Red team', 'red'));
+teams.push(new Team('Purple team', 'purple'));
+teams.push(new Team('Yellow team', 'yellow'));
 
 let strategies = [];
 // strategies.push(new RandomMageStrategy(teams[0], 1));
 // strategies.push(new RandomMageStrategy(teams[1], 2));
-strategies.push(new KeyboardMageStrategy(teams[0], 1));
-strategies.push(new KeyboardMageStrategy(teams[1], 2));
+// strategies.push(new KeyboardMageStrategy(teams[0], 1));
+// strategies.push(new KeyboardMageStrategy(teams[1], 2));
 
-// strategies.push(new StrategyBlueTeam1(teams[0], 'blue1'));
-// strategies.push(new StrategyBlueTeam2(teams[0], 'blue2'));
-// strategies.push(new StrategyBlueTeam3(teams[0], 'blue3'));
-// strategies.push(new StrategyBlueTeam4(teams[0], 'blue4'));
-// strategies.push(new StrategyOrangeTeam1(teams[1], 'orange1'));
-// strategies.push(new StrategyOrangeTeam2(teams[1], 'orange2'));
-// strategies.push(new StrategyOrangeTeam3(teams[1], 'orange3'));
-// strategies.push(new StrategyOrangeTeam4(teams[1], 'orange4'));
-// strategies.push(new StrategyRedTeam1(teams[2], 'red1'));
-// strategies.push(new StrategyRedTeam2(teams[2], 'red2'));
-// strategies.push(new StrategyRedTeam3(teams[2], 'red3'));
-// strategies.push(new StrategyRedTeam4(teams[2], 'red4'));
-// strategies.push(new StrategyPurpleTeam1(teams[3], 'purple1'));
-// strategies.push(new StrategyPurpleTeam2(teams[3], 'purple2'));
-// strategies.push(new StrategyPurpleTeam3(teams[3], 'purple3'));
-// strategies.push(new StrategyPurpleTeam4(teams[3], 'purple4'));
-// strategies.push(new StrategyYellowTeam1(teams[4], 'yellow1'));
-// strategies.push(new StrategyYellowTeam2(teams[4], 'yellow2'));
-// strategies.push(new StrategyYellowTeam3(teams[4], 'yellow3'));
-// strategies.push(new StrategyYellowTeam4(teams[4], 'yellow4'));
+strategies.push(new StrategyBlueTeam1(teams[0], 'blue1'));
+strategies.push(new StrategyBlueTeam2(teams[0], 'blue2'));
+strategies.push(new StrategyBlueTeam3(teams[0], 'blue3'));
+strategies.push(new StrategyBlueTeam4(teams[0], 'blue4'));
+strategies.push(new StrategyOrangeTeam1(teams[1], 'orange1'));
+strategies.push(new StrategyOrangeTeam2(teams[1], 'orange2'));
+strategies.push(new StrategyOrangeTeam3(teams[1], 'orange3'));
+strategies.push(new StrategyOrangeTeam4(teams[1], 'orange4'));
+strategies.push(new StrategyRedTeam1(teams[2], 'red1'));
+strategies.push(new StrategyRedTeam2(teams[2], 'red2'));
+strategies.push(new StrategyRedTeam3(teams[2], 'red3'));
+strategies.push(new StrategyRedTeam4(teams[2], 'red4'));
+strategies.push(new StrategyPurpleTeam1(teams[3], 'purple1'));
+strategies.push(new StrategyPurpleTeam2(teams[3], 'purple2'));
+strategies.push(new StrategyPurpleTeam3(teams[3], 'purple3'));
+strategies.push(new StrategyPurpleTeam4(teams[3], 'purple4'));
+strategies.push(new StrategyYellowTeam1(teams[4], 'yellow1'));
+strategies.push(new StrategyYellowTeam2(teams[4], 'yellow2'));
+strategies.push(new StrategyYellowTeam3(teams[4], 'yellow3'));
+strategies.push(new StrategyYellowTeam4(teams[4], 'yellow4'));
 
 let game = new Game(level, teams, strategies);
 setTimeout(function () {
