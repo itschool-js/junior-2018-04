@@ -53,7 +53,7 @@ class KeyboardMageStrategy extends MageStrategy {
                 break;
             case 'o':
                 action.type = ActionType.CAST;
-                action.spell = new CureSpell();
+                action.spell = new HealSpell();
                 action.spell.targetId = this.id;
                 break;
             case 'q':

@@ -23,8 +23,8 @@ const BOTTLE_HEALTH_PROB = 0.5;
 const FIREBALL_COST = 10;
 const FIREBALL_POWER = 20;
 
-const CURE_COST = 40;
-const CURE_POWER = 50;
+const HEAL_COST = 40;
+const HEAL_POWER = 50;
 
 const HIT_BONUS = 20;
 const DEATH_BONUS = 4 * HIT_BONUS;

@@ -179,10 +179,10 @@ class ImmediateSpell extends Spell {
     }
 }
 
-class CureSpell extends ImmediateSpell {
-    get cost() { return CURE_COST; }
+class HealSpell extends ImmediateSpell {
+    get cost() { return HEAL_COST; }
 
-    get power() { return CURE_POWER; }
+    get power() { return HEAL_POWER; }
 
     apply() {        
         new EnergyEffect(HEALTH, this.power).apply(this.targetMage);
