@@ -6,7 +6,7 @@ const MAGE_TICK = 6;
 const SPELL_TICK = 1;
 
 const MAX_TURN = 200 * MAGE_TICK;
-const TICK_DURATION = 100;
+const TICK_DURATION = 50;
 
 const MAGE_HEALTH = 100;
 const MAGE_MANA = 100;

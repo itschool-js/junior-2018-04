@@ -15,7 +15,7 @@ class Level {
 
         // check dynamic content    
         for (let mage of state.mages) {
-            if (mage.xy.equals(xy)) {
+            if (mage.status != Status.DEAD && mage.xy.equals(xy)) {
                 return mage;
             }
         }

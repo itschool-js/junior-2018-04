@@ -202,7 +202,7 @@ class Game {
 }
 
 
-let level = new HtmlLevel(PLANS[1], GRID_SIZE);
+let level = new HtmlLevel(PLANS[2], GRID_SIZE);
 
 let teams = [];
 teams.push(new Team('Blue team', 'blue'));
